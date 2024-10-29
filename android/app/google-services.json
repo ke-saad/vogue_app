@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "876525886643",
+    "project_id": "vogue-app-fa5f6",
+    "storage_bucket": "vogue-app-fa5f6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:876525886643:android:e514e7447a32c25d91a4c6",
+        "android_client_info": {
+          "package_name": "com.example.vogue_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp7OWes74L-x1RM3OLBXgHWzC5UmpTKV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
