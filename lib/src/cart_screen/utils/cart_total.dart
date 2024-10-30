@@ -31,11 +31,14 @@ class CartTotal extends StatelessWidget {
     );
   }
 
-  static double calculateTotal(List<Map<String, dynamic>> cartItems) {
-    double total = 0;
-    for (final item in cartItems) {
+  // In cart_total.dart
+static double calculateTotal(List<Map<String, dynamic>?> cartItems) {
+  double total = 0;
+  for (final item in cartItems) {
+    if (item != null) {
       total += double.parse(item['price'].toString());
     }
-    return total;
   }
+  return total;
+}
 }

@@ -18,6 +18,7 @@ class _CartScreenState extends State<CartScreen> {
   List<Map<String, dynamic>> cartItems = [];
   bool isLoading = true;
   double totalPrice = 0.0;
+  final UpdateCartTotal _updateCartTotal = UpdateCartTotal();
 
   final _storage = FirebaseStorage.instance;
 
@@ -40,6 +41,9 @@ class _CartScreenState extends State<CartScreen> {
 
         totalPrice = data['total_price'] as double;
 
+        // Log cart articles when the list is displayed
+        logCartArticles(cartArticles);
+
         for (var articleId in cartArticles) {
           final clothesDoc = await FirebaseFirestore.instance
               .collection('clothes')
@@ -47,6 +51,8 @@ class _CartScreenState extends State<CartScreen> {
               .get();
           if (clothesDoc.exists) {
             final clothesData = clothesDoc.data() as Map<String, dynamic>;
+            clothesData['clothesDocId'] = articleId; // Add clothesDocId
+
             final imagePath = clothesData['image'] as String?;
             if (imagePath != null && imagePath.isNotEmpty) {
               try {
@@ -81,34 +87,61 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-  void removeItemFromCart(String clothesId) async {
+  void removeItemFromCart(String articleId) async {
     try {
-      final cartDoc = await FirebaseFirestore.instance
+      final cartDocRef = FirebaseFirestore.instance
           .collection('carts')
-          .doc(widget.userId)
-          .get();
+          .doc(widget.userId);
+
+      final DocumentSnapshot cartDoc = await cartDocRef.get();
 
       if (cartDoc.exists) {
         List<dynamic> cartArticles = cartDoc.get('cart_articles') ?? [];
-        cartArticles.remove(clothesId);
 
-        // Update the total price in Firestore
-        await UpdateCartTotal()
-            .updateTotal(widget.userId, cartArticles.cast<String>());
+        // Check if the item is in the cart before removing
+        if (cartArticles.contains(articleId)) {
+          // Update the 'cart_articles' field in Firestore
+          await cartDocRef.update({
+            'cart_articles': FieldValue.arrayRemove([articleId]) // Use arrayRemove
+          });
 
-        // Remove item from local cartItems and recalculate total price
-        setState(() {
-          cartItems.removeWhere((item) => item['clothes_id'] == clothesId);
-          
-          // Recalculate the total price
-          totalPrice = CartTotal.calculateTotal(cartItems);
-        });
+          // Debugging: Log the updated cartArticles before the update
+          print('Updated cart articles before Firestore update: $cartArticles');
+
+          // Verify the update
+          final updatedCartDoc = await cartDocRef.get();
+          final updatedCartArticles = updatedCartDoc.get('cart_articles') as List<dynamic>;
+
+          // Check if the item was removed
+          if (!updatedCartArticles.contains(articleId)) {
+            print('Item $articleId successfully removed from database!');
+          } else {
+            print('Error: Item $articleId still exists in the database!');
+          }
+
+          // Remove item from local cartItems and recalculate total price
+          setState(() {
+            cartItems.removeWhere((item) => item['clothesDocId'] == articleId); // Adjust this if you have a different key for document ID in cartItems
+            totalPrice = CartTotal.calculateTotal(cartItems);
+          });
+        } else {
+          print('Item $articleId not found in cart_articles!');
+        }
       } else {
         print('Cart not found!');
       }
     } catch (e) {
       print('Error removing item: $e');
     }
+  }
+
+
+
+  void logCartArticles(List<dynamic> cartArticles) {
+    print('Cart Articles:');
+    cartArticles.forEach((element) {
+      print('- $element');
+    });
   }
 
   @override

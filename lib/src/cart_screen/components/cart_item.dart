@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CartItem extends StatelessWidget {
   final Map<String, dynamic> clothes;
   final String userId;
-  final Function(String) onRemoveItem;
+  final Function(String) onRemoveItem; // Function takes a String (the document ID)
 
   const CartItem({
     super.key,
@@ -34,7 +34,8 @@ class CartItem extends StatelessWidget {
       trailing: IconButton(
         icon: const Icon(Icons.delete),
         onPressed: () {
-          onRemoveItem(clothes['clothes_id']);
+          // Pass the document ID to onRemoveItem
+          onRemoveItem(clothes['clothesDocId']); // Assuming 'clothesDocId' is the correct key
         },
       ),
     );
