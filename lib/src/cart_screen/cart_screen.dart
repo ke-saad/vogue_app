@@ -19,8 +19,7 @@ class _CartScreenState extends State<CartScreen> {
   bool isLoading = true;
   double totalPrice = 0.0;
   final UpdateCartTotal _updateCartTotal = UpdateCartTotal();
-
-  final _storage = FirebaseStorage.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   @override
   void initState() {
@@ -37,12 +36,9 @@ class _CartScreenState extends State<CartScreen> {
 
       if (cartDoc.exists) {
         final data = cartDoc.data() as Map<String, dynamic>;
-        final cartArticles = data['cart_articles'] as List<dynamic>;
+        final cartArticles = data['cart_articles'] as List<dynamic>? ?? [];
 
-        totalPrice = data['total_price'] as double;
-
-        // Log cart articles when the list is displayed
-        logCartArticles(cartArticles);
+        totalPrice = data['total_price']?.toDouble() ?? 0.0;
 
         for (var articleId in cartArticles) {
           final clothesDoc = await FirebaseFirestore.instance
@@ -51,7 +47,7 @@ class _CartScreenState extends State<CartScreen> {
               .get();
           if (clothesDoc.exists) {
             final clothesData = clothesDoc.data() as Map<String, dynamic>;
-            clothesData['clothesDocId'] = articleId; // Add clothesDocId
+            clothesData['clothesDocId'] = articleId;
 
             final imagePath = clothesData['image'] as String?;
             if (imagePath != null && imagePath.isNotEmpty) {
@@ -81,68 +77,48 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  void updateTotalPrice(double newTotal) {
-    setState(() {
-      totalPrice = newTotal;
-    });
-  }
+  Future<void> removeItemFromCart(String articleId) async {
+  try {
+    final cartDocRef = FirebaseFirestore.instance.collection('carts').doc(widget.userId);
+    final DocumentSnapshot cartDoc = await cartDocRef.get();
 
-  void removeItemFromCart(String articleId) async {
-    try {
-      final cartDocRef = FirebaseFirestore.instance
-          .collection('carts')
-          .doc(widget.userId);
+    if (cartDoc.exists) {
+      List<String> cartArticles = List<String>.from(cartDoc.get('cart_articles') ?? []);
 
-      final DocumentSnapshot cartDoc = await cartDocRef.get();
+      if (cartArticles.contains(articleId)) {
+        await cartDocRef.update({
+          'cart_articles': FieldValue.arrayRemove([articleId])
+        });
 
-      if (cartDoc.exists) {
-        List<dynamic> cartArticles = cartDoc.get('cart_articles') ?? [];
+        // Remove from local list and update the total
+        setState(() {
+          cartItems.removeWhere((item) => item['clothesDocId'] == articleId);
+        });
 
-        // Check if the item is in the cart before removing
-        if (cartArticles.contains(articleId)) {
-          // Update the 'cart_articles' field in Firestore
-          await cartDocRef.update({
-            'cart_articles': FieldValue.arrayRemove([articleId]) // Use arrayRemove
-          });
+        // Update `cartArticles` to reflect the item removed
+        cartArticles.remove(articleId);
 
-          // Debugging: Log the updated cartArticles before the update
-          print('Updated cart articles before Firestore update: $cartArticles');
+        // Call `updateTotal` with the updated cart articles
+        await _updateCartTotal.updateTotal(widget.userId, cartArticles);
 
-          // Verify the update
-          final updatedCartDoc = await cartDocRef.get();
-          final updatedCartArticles = updatedCartDoc.get('cart_articles') as List<dynamic>;
+        // Refresh the total price on screen after update
+        final updatedTotal = await _updateCartTotal.calculateTotal(cartArticles);
+        setState(() {
+          totalPrice = updatedTotal;
+        });
 
-          // Check if the item was removed
-          if (!updatedCartArticles.contains(articleId)) {
-            print('Item $articleId successfully removed from database!');
-          } else {
-            print('Error: Item $articleId still exists in the database!');
-          }
-
-          // Remove item from local cartItems and recalculate total price
-          setState(() {
-            cartItems.removeWhere((item) => item['clothesDocId'] == articleId); // Adjust this if you have a different key for document ID in cartItems
-            totalPrice = CartTotal.calculateTotal(cartItems);
-          });
-        } else {
-          print('Item $articleId not found in cart_articles!');
-        }
+        print('Cart total updated after item removal.');
       } else {
-        print('Cart not found!');
+        print('Item $articleId not found in cart_articles!');
       }
-    } catch (e) {
-      print('Error removing item: $e');
+    } else {
+      print('Cart not found!');
     }
+  } catch (e) {
+    print('Error removing item: $e');
   }
+}
 
-
-
-  void logCartArticles(List<dynamic> cartArticles) {
-    print('Cart Articles:');
-    cartArticles.forEach((element) {
-      print('- $element');
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
