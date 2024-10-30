@@ -123,9 +123,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Cart'),
-      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
