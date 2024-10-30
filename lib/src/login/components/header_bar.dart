@@ -10,7 +10,7 @@ class HeaderBar extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.fromLTRB(w * 0.1, 5.0, w * 0.1, 0.0),
-      height: h * 0.075,
+      height: h * 0.1,
       color: const Color.fromARGB(255, 243, 33, 33),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

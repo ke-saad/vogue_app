@@ -36,6 +36,8 @@ class FormButton extends StatelessWidget {
           );
           if (userInfo != null) {
             logger.i('Login successful: $userInfo');
+          } else if (emailController.text.isEmpty || passwordController.text.isEmpty){
+            logger.w('Login failed: Please fill in all fields');
           } else {
             logger.w('Login failed: Invalid email or password');
           }
