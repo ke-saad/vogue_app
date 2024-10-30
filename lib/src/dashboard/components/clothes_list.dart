@@ -59,10 +59,17 @@ class _ClothesListState extends State<ClothesList> {
       }
     }
 
-    setState(() {
-      clothesData = data;
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        clothesData = data;
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

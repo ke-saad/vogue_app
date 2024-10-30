@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../cart_screen/cart_screen.dart';
 import './components/clothes_list.dart';
 import '../clothes_details/clothes_details_screen.dart';
 
@@ -51,7 +52,7 @@ class _UserDashboardState extends State<UserDashboard> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      selectedClothesId = null; 
+      selectedClothesId = null;
     });
   }
 
@@ -65,8 +66,8 @@ class _UserDashboardState extends State<UserDashboard> {
               selectedClothesId = null;
             });
           },
-          userId: widget.userId, 
-          totalPrice: 0.0,  
+          userId: widget.userId,
+          totalPrice: 0.0,
         ),
       );
     } else {
@@ -126,7 +127,7 @@ class _UserDashboardState extends State<UserDashboard> {
           },
         );
       case 1:
-        return const Center(child: Text('Cart Page'));
+        return CartScreen(userId: widget.userId);
       case 2:
         return const Center(child: Text('Profile Page'));
       default:
