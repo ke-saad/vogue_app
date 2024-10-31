@@ -76,51 +76,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final buttonWidth = MediaQuery.of(context).size.width * 0.8; // Set width to 80% of screen width
+    final buttonWidth = MediaQuery.of(context).size.width * 0.8;
 
     return Scaffold(
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Colors.red, // Use the specified red color for the loader
+                color: Colors.red,
               ),
             )
-          : Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          ProfileFields(
-                            userInfo: userInfo,
-                            updateHasChanges: updateHasChanges,
-                          ),
-                          const SizedBox(height: 20.0),
-                          SizedBox(
-                            width: buttonWidth,
-                            child: ProcessButton(
-                              hasChanges: hasChanges,
-                              updateUserInfo: updateUserInfo,
-                            ),
-                          ),
-                          const SizedBox(height: 20.0),
-                          SizedBox(
-                            width: buttonWidth,
-                            child: AddClothes(userId: widget.userId),
-                          ),
-                          const SizedBox(height: 20.0),
-                          SizedBox(
-                            width: buttonWidth,
-                            child: LogoutButton(userId: widget.userId),
-                          ),
-                        ],
+          : Center( // Wrap the content with Center
+              child: SingleChildScrollView( // Add SingleChildScrollView for scrolling
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // Make the column as small as its content
+                    children: [
+                      ProfileFields(
+                        userInfo: userInfo,
+                        updateHasChanges: updateHasChanges,
                       ),
-                    ),
+                      const SizedBox(height: 20.0),
+                      SizedBox(
+                        width: buttonWidth,
+                        child: ProcessButton(
+                          hasChanges: hasChanges,
+                          updateUserInfo: updateUserInfo,
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
+                      SizedBox(
+                        width: buttonWidth,
+                        child: AddClothes(userId: widget.userId),
+                      ),
+                      const SizedBox(height: 20.0),
+                      SizedBox(
+                        width: buttonWidth,
+                        child: LogoutButton(userId: widget.userId),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
     );
   }

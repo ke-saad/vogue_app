@@ -28,54 +28,61 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> fetchCartData() async {
-    try {
-      final cartDoc = await FirebaseFirestore.instance
-          .collection('carts')
-          .doc(widget.userId)
-          .get();
+  try {
+    final cartDoc = await FirebaseFirestore.instance
+        .collection('carts')
+        .doc(widget.userId)
+        .get();
 
-      if (cartDoc.exists) {
-        final data = cartDoc.data() as Map<String, dynamic>;
-        final cartArticles = data['cart_articles'] as List<dynamic>? ?? [];
+    if (cartDoc.exists) {
+      final data = cartDoc.data() as Map<String, dynamic>;
+      final cartArticles = data['cart_articles'] as List<dynamic>? ?? [];
 
-        totalPrice = data['total_price']?.toDouble() ?? 0.0;
+      totalPrice = data['total_price']?.toDouble() ?? 0.0;
 
-        for (var articleId in cartArticles) {
-          final clothesDoc = await FirebaseFirestore.instance
-              .collection('clothes')
-              .doc(articleId)
-              .get();
-          if (clothesDoc.exists) {
-            final clothesData = clothesDoc.data() as Map<String, dynamic>;
-            clothesData['clothesDocId'] = articleId;
+      for (var articleId in cartArticles) {
+        final clothesDoc = await FirebaseFirestore.instance
+            .collection('clothes')
+            .doc(articleId)
+            .get();
+        if (clothesDoc.exists) {
+          final clothesData = clothesDoc.data() as Map<String, dynamic>;
+          clothesData['clothesDocId'] = articleId;
 
-            final imagePath = clothesData['image'] as String?;
-            if (imagePath != null && imagePath.isNotEmpty) {
-              try {
-                final imageRef = _storage.ref().child(imagePath);
-                final imageData = await imageRef.getData();
-                clothesData['image'] = imageData;
-              } catch (e) {
-                print('Error fetching image for ${clothesData['title']}: $e');
-                clothesData['image'] = null;
-              }
-            } else {
+          final imagePath = clothesData['image'] as String?;
+          if (imagePath != null && imagePath.isNotEmpty) {
+            try {
+              final imageRef = _storage.ref().child(imagePath);
+              final imageData = await imageRef.getData();
+              clothesData['image'] = imageData;
+            } catch (e) {
+              print('Error fetching image for ${clothesData['title']}: $e');
               clothesData['image'] = null;
             }
-            cartItems.add(clothesData);
+          } else {
+            clothesData['image'] = null;
           }
+          cartItems.add(clothesData);
         }
       }
+    }
+
+    // Check if the widget is still mounted before calling setState
+    if (mounted) {
       setState(() {
         isLoading = false;
       });
-    } catch (e) {
-      print('Error fetching cart data: $e');
+    }
+  } catch (e) {
+    print('Error fetching cart data: $e');
+    if (mounted) {
       setState(() {
         isLoading = false;
       });
     }
   }
+}
+
 
   Future<void> removeItemFromCart(String articleId) async {
   try {

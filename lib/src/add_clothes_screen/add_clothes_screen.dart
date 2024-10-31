@@ -21,23 +21,25 @@ class _AddClothesScreenState extends State<AddClothesScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ReturnToProfileButton(), // Top of the screen
-            const SizedBox(height: 20),
-            AddClothesFields(userId: widget.userId), // Form for clothes details
-            const SizedBox(height: 20),
-            SubmitClothesButton(
-              onSubmit: () {
-                // Access the AddClothesFields state to get the data
-                final addClothesFieldsState =
-                    context.findAncestorStateOfType<AddClothesFieldsState>();
-                if (addClothesFieldsState != null) {
-                  addClothesFieldsState.submitData(); // Call the public method
-                }
-              },
-            ), // At the bottom
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ReturnToProfileButton(), // Top of the screen
+              const SizedBox(height: 20),
+              AddClothesFields(userId: widget.userId), // Form for clothes details
+              const SizedBox(height: 20),
+              SubmitClothesButton(
+                onSubmit: () {
+                  // Access the AddClothesFields state to get the data
+                  final addClothesFieldsState =
+                      context.findAncestorStateOfType<AddClothesFieldsState>();
+                  if (addClothesFieldsState != null) {
+                    addClothesFieldsState.submitData(); // Call the public method
+                  }
+                },
+              ), // At the bottom
+            ],
+          ),
         ),
       ),
     );
