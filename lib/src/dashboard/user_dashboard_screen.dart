@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../cart_screen/cart_screen.dart';
 import './components/clothes_list.dart';
 import '../clothes_details/clothes_details_screen.dart';
+import '../profile_screen/profile_screen.dart'; // Import the ProfileScreen
 
 class UserDashboard extends StatefulWidget {
   final String userId;
@@ -129,7 +130,7 @@ class _UserDashboardState extends State<UserDashboard> {
       case 1:
         return CartScreen(userId: widget.userId);
       case 2:
-        return const Center(child: Text('Profile Page'));
+        return ProfileScreen(userId: widget.userId); // Navigate to ProfileScreen
       default:
         return const Center(child: Text('Unknown Page'));
     }

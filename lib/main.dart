@@ -23,8 +23,8 @@ class VogueApp extends StatefulWidget {
 }
 
 class VogueAppState extends State<VogueApp> {
-  User? _user;
   final Logger logger = Logger();
+  User? _user;
 
   @override
   void initState() {
@@ -32,6 +32,7 @@ class VogueAppState extends State<VogueApp> {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       setState(() {
         _user = user;
+        logger.i(user != null ? 'User signed in: ${user.uid}' : 'User signed out');
       });
     });
   }
@@ -43,9 +44,7 @@ class VogueAppState extends State<VogueApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: _user == null
-          ? const LoginScreen()
-          : UserDashboard(userId: _user!.uid),
+      home: _user == null ? const LoginScreen() : UserDashboard(userId: _user!.uid),
     );
   }
 }
