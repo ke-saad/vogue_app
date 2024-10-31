@@ -37,6 +37,13 @@ class VogueAppState extends State<VogueApp> {
     });
   }
 
+  void logout() async {
+    await FirebaseAuth.instance.signOut();
+    setState(() {
+      _user = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

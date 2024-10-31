@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../cart_screen/cart_screen.dart';
 import './components/clothes_list.dart';
 import '../clothes_details/clothes_details_screen.dart';
-import '../profile_screen/profile_screen.dart'; // Import the ProfileScreen
+import '../profile_screen/profile_screen.dart';
+import 'components/bottom_navbar.dart'; // Import the ProfileScreen
 
 class UserDashboard extends StatefulWidget {
   final String userId;
@@ -58,63 +59,36 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget _buildSelectedContent() {
-    if (selectedClothesId != null) {
-      return Scaffold(
-        body: ClothesDetailsScreen(
-          clothesDocId: selectedClothesId!,
-          onBackToDashboard: () {
-            setState(() {
-              selectedClothesId = null;
-            });
-          },
-          userId: widget.userId,
-          totalPrice: 0.0,
-        ),
-      );
-    } else {
-      return Scaffold(
-        body: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              color: Colors.white,
-              child: Center(
-                child: Text(
-                  firstName != null ? 'Welcome $firstName' : 'Welcome',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24.0,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: _buildListContent(),
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: 'Cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-        ),
-      );
-    }
+  if (selectedClothesId != null) {
+    return Scaffold(
+      body: ClothesDetailsScreen(
+        clothesDocId: selectedClothesId!,
+        onBackToDashboard: () {
+          setState(() {
+            selectedClothesId = null;
+          });
+        },
+        userId: widget.userId,
+        totalPrice: 0.0,
+      ),
+    );
+  } else {
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: _buildListContent(),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
+    );
   }
+}
+
 
   Widget _buildListContent() {
     switch (_selectedIndex) {
@@ -130,7 +104,7 @@ class _UserDashboardState extends State<UserDashboard> {
       case 1:
         return CartScreen(userId: widget.userId);
       case 2:
-        return ProfileScreen(userId: widget.userId); // Navigate to ProfileScreen
+        return ProfileScreen(userId: widget.userId);
       default:
         return const Center(child: Text('Unknown Page'));
     }
