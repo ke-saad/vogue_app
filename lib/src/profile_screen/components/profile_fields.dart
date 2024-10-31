@@ -4,7 +4,8 @@ class ProfileFields extends StatefulWidget {
   final Map<String, dynamic> userInfo;
   final Function(bool) updateHasChanges;
 
-  const ProfileFields({super.key, required this.userInfo, required this.updateHasChanges});
+  const ProfileFields(
+      {super.key, required this.userInfo, required this.updateHasChanges});
 
   @override
   State<ProfileFields> createState() => _ProfileFieldsState();
@@ -18,10 +19,9 @@ class _ProfileFieldsState extends State<ProfileFields> {
 
   @override
   Widget build(BuildContext context) {
-    // Use MediaQuery to get the screen height
     final screenHeight = MediaQuery.of(context).size.height;
-    // Adjust field height based on screen height (10% of screen height here, for example)
-    final fieldHeight = screenHeight * 0.1;
+
+    final fieldHeight = screenHeight * 0.07;
 
     return Form(
       key: _formKey,
@@ -39,7 +39,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
             validatorMessage: 'Please enter your first name',
             height: fieldHeight,
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 12.0),
           _buildTextField(
             label: 'Last Name',
             initialValue: widget.userInfo['last_name'],
@@ -52,7 +52,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
             validatorMessage: 'Please enter your last name',
             height: fieldHeight,
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 12.0),
           _buildTextField(
             label: 'Birthday',
             initialValue: widget.userInfo['birthday'],
@@ -65,7 +65,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
             validatorMessage: 'Please enter your birthday',
             height: fieldHeight,
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 12.0),
           _buildTextField(
             label: 'Address',
             initialValue: widget.userInfo['address'],
@@ -78,7 +78,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
             validatorMessage: 'Please enter your address',
             height: fieldHeight,
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 12.0),
           _buildTextField(
             label: 'Postal Code',
             initialValue: widget.userInfo['postalCode'],
@@ -91,7 +91,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
             validatorMessage: 'Please enter your postal code',
             height: fieldHeight,
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 12.0),
           _buildTextField(
             label: 'City',
             initialValue: widget.userInfo['city'],
@@ -117,7 +117,6 @@ class _ProfileFieldsState extends State<ProfileFields> {
     required double height,
   }) {
     return SizedBox(
-      height: height,
       child: TextFormField(
         initialValue: initialValue,
         decoration: InputDecoration(

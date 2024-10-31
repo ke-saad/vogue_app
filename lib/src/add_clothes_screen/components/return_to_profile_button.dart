@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 
-class ProcessButton extends StatelessWidget {
-  final bool hasChanges;
-  final VoidCallback updateUserInfo; // Use VoidCallback instead of Function
-
-  const ProcessButton({Key? key, required this.hasChanges, required this.updateUserInfo}) : super(key: key);
-
+class ReturnToProfileButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: hasChanges ? updateUserInfo : null,
+      onPressed: () {
+        Navigator.pop(context); // Navigate back to the ProfileScreen
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.red,
         textStyle: const TextStyle(
           color: Colors.white,
         ),
@@ -20,7 +17,7 @@ class ProcessButton extends StatelessWidget {
         ),
       ),
       child: const Text(
-        'Save Changes',
+        'Back to Profile',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,

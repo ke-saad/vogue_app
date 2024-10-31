@@ -149,7 +149,7 @@ class _ClothesListState extends State<ClothesList> {
                                 Text(
                                   'Price: €${clothes['price']}',
                                   style: const TextStyle(
-                                    color: Color(0xFFFFCDD2),
+                                    color: Color.fromARGB(255, 0, 0, 0),
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                   ),

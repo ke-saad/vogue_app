@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 
+import '../../add_clothes_screen/add_clothes_screen.dart';
+
 class AddClothes extends StatelessWidget {
   final String userId;
 
-  const AddClothes({Key? key, required this.userId}) : super(key: key);
+  const AddClothes({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        // Implement logic to add clothes, for example:
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => AddClothesScreen(userId: userId), // Create a new screen for adding clothes
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddClothesScreen(userId: userId),
+          ),
+        );
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
         textStyle: const TextStyle(
           color: Colors.white,
         ),

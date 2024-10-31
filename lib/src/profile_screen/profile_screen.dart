@@ -76,9 +76,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final buttonWidth = MediaQuery.of(context).size.width * 0.8; // Set width to 80% of screen width
+
     return Scaffold(
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.red, // Use the specified red color for the loader
+              ),
+            )
           : Column(
               children: [
                 Expanded(
@@ -92,14 +98,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             updateHasChanges: updateHasChanges,
                           ),
                           const SizedBox(height: 20.0),
-                          ProcessButton(
-                            hasChanges: hasChanges,
-                            updateUserInfo: updateUserInfo,
+                          SizedBox(
+                            width: buttonWidth,
+                            child: ProcessButton(
+                              hasChanges: hasChanges,
+                              updateUserInfo: updateUserInfo,
+                            ),
                           ),
                           const SizedBox(height: 20.0),
-                          AddClothes(userId: widget.userId),
+                          SizedBox(
+                            width: buttonWidth,
+                            child: AddClothes(userId: widget.userId),
+                          ),
                           const SizedBox(height: 20.0),
-                          LogoutButton(userId: widget.userId),
+                          SizedBox(
+                            width: buttonWidth,
+                            child: LogoutButton(userId: widget.userId),
+                          ),
                         ],
                       ),
                     ),
