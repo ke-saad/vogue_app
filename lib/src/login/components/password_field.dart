@@ -11,12 +11,8 @@ class PasswordField extends StatefulWidget {
 
 class _PasswordFieldState extends State<PasswordField> {
   bool _passwordVisible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _passwordVisible = false;
-  }
+  final Color focusedBorderColor = Colors.red;
+  final Color unfocusedBorderColor = Colors.red.withOpacity(0.5);
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +21,22 @@ class _PasswordFieldState extends State<PasswordField> {
 
     return SizedBox(
       width: w * 0.8,
-      height: h * 0.05,
+      height: h * 0.07,
       child: TextFormField(
         controller: widget.controller,
         textAlign: TextAlign.center,
         obscureText: !_passwordVisible,
         decoration: InputDecoration(
           labelText: 'Password',
-          hintText: 'Enter your password',
+          labelStyle: const TextStyle(color: Colors.black),
           border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.red.withOpacity(0.5),
-            ),
+            borderSide: BorderSide(color: unfocusedBorderColor),
           ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.red,
-            ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: focusedBorderColor, width: 2.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: unfocusedBorderColor, width: 1.0),
           ),
           suffixIcon: IconButton(
             icon: Icon(
@@ -49,11 +44,9 @@ class _PasswordFieldState extends State<PasswordField> {
               color: Colors.black,
             ),
             onPressed: () {
-              setState(
-                () {
-                  _passwordVisible = !_passwordVisible;
-                },
-              );
+              setState(() {
+                _passwordVisible = !_passwordVisible;
+              });
             },
           ),
         ),

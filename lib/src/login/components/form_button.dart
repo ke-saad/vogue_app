@@ -17,16 +17,17 @@ class FormButton extends StatelessWidget {
     double h = MediaQuery.of(context).size.height;
 
     return SizedBox(
-      width: w * 0.4,
-      height: h * 0.05,
+      width: w * 0.8,
+      height: h * 0.07,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
-          textStyle: const TextStyle(
-            color: Colors.white,
-          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         onPressed: () async {
@@ -36,7 +37,7 @@ class FormButton extends StatelessWidget {
           );
           if (userInfo != null) {
             logger.i('Login successful: $userInfo');
-          } else if (emailController.text.isEmpty || passwordController.text.isEmpty){
+          } else if (emailController.text.isEmpty || passwordController.text.isEmpty) {
             logger.w('Login failed: Please fill in all fields');
           } else {
             logger.w('Login failed: Invalid email or password');
