@@ -80,7 +80,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
 
           // Address Field
           _buildTextField(
-            label: 'Address',
+            label: 'Adresse',
             initialValue: widget.userInfo['address'],
             onChanged: (value) {
               widget.updateHasChanges(true);

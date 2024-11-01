@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
+import 'package:flutter/services.dart'; // Uncommented to use TextInputFormatter
 
 import '../utils/string_filter.dart';
 
@@ -251,7 +252,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
       child: Column(
         children: [
           _buildTextField(
-            label: 'Title',
+            label: 'Titre',
             initialValue: _title,
             onChanged: (value) {
               setState(() {
@@ -269,7 +270,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
                     ? Image.file(File(_image!.path))
                     : (_imageBytes != null
                         ? Image.memory(_imageBytes!)
-                        : const Text('No image selected')),
+                        : const Text('Aucune image sélectionnée')),
               ),
               IconButton(
                 onPressed: _pickImage,
@@ -279,7 +280,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
           ),
           const SizedBox(height: 12.0),
           _buildTextFieldWithController(
-            label: 'Category',
+            label: 'Catégorie',
             controller: _classifiedCategoryController,
             validatorMessage: null,
             isReadOnly: true,
@@ -287,7 +288,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
           ),
           const SizedBox(height: 12.0),
           _buildTextField(
-            label: 'Brand',
+            label: 'Marque',
             initialValue: _brand,
             onChanged: (value) {
               setState(() {
@@ -299,19 +300,20 @@ class AddClothesFieldsState extends State<AddClothesFields> {
           ),
           const SizedBox(height: 12.0),
           _buildTextField(
-            label: 'Size',
+            label: 'Taille',
             initialValue: _size?.toString(),
             onChanged: (value) {
               setState(() {
-                _size = int.tryParse(value!);
+                _size = int.tryParse(value);
               });
             },
-            validatorMessage: 'Please enter a valid size',
+            validatorMessage: 'Please enter a size',
             height: fieldHeight,
+            keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 12.0),
           _buildTextField(
-            label: 'Price',
+            label: 'Prix',
             initialValue: _price,
             onChanged: (value) {
               setState(() {
@@ -320,12 +322,16 @@ class AddClothesFieldsState extends State<AddClothesFields> {
             },
             validatorMessage: 'Please enter a price',
             height: fieldHeight,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+            ],
           ),
-          const SizedBox(height: 12.0),
+          const SizedBox(height: 24.0),
           SizedBox(
             width: double.infinity, // Make the button take the full width
             child: ElevatedButton(
-              onPressed: submitData, // Call the passed callback
+              onPressed: submitData,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                     Colors.red, // Set the button background color to red
@@ -338,7 +344,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
                 ),
               ),
               child: const Text(
-                'Submit',
+                'Valider',
                 style: TextStyle(
                   color: Colors.white, // Ensure the text color is white
                   fontWeight: FontWeight.bold, // Set the text to bold
@@ -351,20 +357,63 @@ class AddClothesFieldsState extends State<AddClothesFields> {
     );
   }
 
+  Widget _buildTextField({
+    required String label,
+    required String? initialValue,
+    required ValueChanged<String> onChanged,
+    required String? validatorMessage,
+    double height = 50.0,
+    TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    return Container(
+      height: height,
+      child: TextFormField(
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        initialValue: initialValue,
+        onChanged: onChanged,
+        validator: (value) {
+          if (validatorMessage != null && (value == null || value.isEmpty)) {
+            return validatorMessage;
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: focusedBorderColor),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: unfocusedBorderColor),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTextFieldWithController({
     required String label,
     required TextEditingController controller,
     required String? validatorMessage,
     bool isReadOnly = false,
-    required double height,
+    double height = 50.0,
   }) {
-    return SizedBox(
+    return Container(
       height: height,
       child: TextFormField(
         controller: controller,
         readOnly: isReadOnly,
+        validator: (value) {
+          if (validatorMessage != null && (value == null || value.isEmpty)) {
+            return validatorMessage;
+          }
+          return null;
+        },
         decoration: InputDecoration(
           labelText: label,
+          border: OutlineInputBorder(),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: focusedBorderColor),
           ),
@@ -372,39 +421,6 @@ class AddClothesFieldsState extends State<AddClothesFields> {
             borderSide: BorderSide(color: unfocusedBorderColor),
           ),
         ),
-        validator: validatorMessage != null
-            ? (value) => value!.isEmpty ? validatorMessage : null
-            : null,
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    String? initialValue = '',
-    required String? Function(String?)? onChanged,
-    required String? validatorMessage,
-    bool isReadOnly = false,
-    required double height,
-  }) {
-    return SizedBox(
-      height: height,
-      child: TextFormField(
-        initialValue: initialValue,
-        readOnly: isReadOnly,
-        decoration: InputDecoration(
-          labelText: label,
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: focusedBorderColor),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: unfocusedBorderColor),
-          ),
-        ),
-        onChanged: onChanged,
-        validator: validatorMessage != null
-            ? (value) => value!.isEmpty ? validatorMessage : null
-            : null,
       ),
     );
   }

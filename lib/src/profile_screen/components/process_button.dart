@@ -20,7 +20,7 @@ class ProcessButton extends StatelessWidget {
         ),
       ),
       child: const Text(
-        'Mettre à jour',
+        'Valider',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
