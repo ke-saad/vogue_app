@@ -8,6 +8,8 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
 
+import '../utils/string_filter.dart';
+
 class AddClothesFields extends StatefulWidget {
   final String userId;
 
@@ -125,7 +127,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
 
       setState(() {
         String classifiedCategory = _labels![maxScoreIndex];
-        _classifiedCategoryController.text = classifiedCategory;
+        _classifiedCategoryController.text = filterString(classifiedCategory);
         
         // Only set user category if it's empty
         if (_userCategoryController.text.isEmpty) {
@@ -274,14 +276,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
           ),
           const SizedBox(height: 12.0),
           _buildTextFieldWithController(
-            label: 'Category (User Input)',
-            controller: _userCategoryController,
-            validatorMessage: 'Please enter a category',
-            height: fieldHeight,
-          ),
-          const SizedBox(height: 12.0),
-          _buildTextFieldWithController(
-            label: 'Category (Classified)',
+            label: 'Category',
             controller: _classifiedCategoryController,
             validatorMessage: null,
             isReadOnly: true,
