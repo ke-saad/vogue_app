@@ -131,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Profile updated successfully'),
+          content: Text('Vos informations ont été mises à jour'),
           backgroundColor: Colors.green,
         ),
       );
@@ -140,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (e is! FirebaseAuthException) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Error updating profile'),
+            content: Text('Mot de passe actuel incorrect'),
             backgroundColor: Colors.red,
           ),
         );
