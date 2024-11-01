@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
-import 'package:logger/logger.dart'; // Import the logger package
+import 'package:logger/logger.dart';
 
 class AddClothesFields extends StatefulWidget {
   final String userId;
@@ -19,11 +19,12 @@ class AddClothesFields extends StatefulWidget {
 
 class AddClothesFieldsState extends State<AddClothesFields> {
   final _formKey = GlobalKey<FormState>();
-  final Logger _logger = Logger(); // Initialize the logger
+  final Logger _logger = Logger();
 
   String? _title;
   XFile? _image;
-  String? _category;
+  final TextEditingController _userCategoryController = TextEditingController();
+  final TextEditingController _classifiedCategoryController = TextEditingController();
   String? _brand;
   int? _size;
   String? _price;
@@ -32,8 +33,8 @@ class AddClothesFieldsState extends State<AddClothesFields> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   Interpreter? _interpreter;
   List<String>? _labels;
-  bool _isModelLoaded = false; // Flag to track model loading
-  bool _isLoadingModel = true; // Flag for loading model process
+  bool _isModelLoaded = false;
+  bool _isLoadingModel = true;
 
   @override
   void initState() {
@@ -43,7 +44,6 @@ class AddClothesFieldsState extends State<AddClothesFields> {
 
   Future<void> _loadModel() async {
     try {
-      // Check if the model file exists in assets
       if (await _checkAssetFileExists('assets/my_model.tflite')) {
         _interpreter = await Interpreter.fromAsset('assets/my_model.tflite');
         _isModelLoaded = true;
@@ -52,7 +52,6 @@ class AddClothesFieldsState extends State<AddClothesFields> {
         _logger.e("Model file not found in assets.");
       }
 
-      // Check if the labels file exists in assets
       if (await _checkAssetFileExists('assets/labels.txt')) {
         final labelsData =
             await DefaultAssetBundle.of(context).loadString('assets/labels.txt');
@@ -75,20 +74,19 @@ class AddClothesFieldsState extends State<AddClothesFields> {
       final data = await DefaultAssetBundle.of(context).load(assetPath);
       return data != null;
     } catch (e) {
-      return false; // If loading fails, the asset doesn't exist
+      return false;
     }
   }
 
   Future<void> _pickImage() async {
-    // Check if the model is loaded before picking the image
     if (_isLoadingModel) {
       _logger.e("Model is still loading. Please wait.");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Model is still loading. Please wait."),
         ),
       );
-      return; // Exit the method if the model is still loading
+      return;
     }
 
     final picker = ImagePicker();
@@ -103,21 +101,19 @@ class AddClothesFieldsState extends State<AddClothesFields> {
 
   Future<void> _classifyImage(File image) async {
     if (_interpreter == null || _labels == null) {
-      _logger.e(
-          "Image classification failed: model is not loaded or labels are null.");
+      _logger.e("Image classification failed: model is not loaded or labels are null.");
       return;
     }
 
     final img.Image? imageInput = img.decodeImage(image.readAsBytesSync());
     if (imageInput != null) {
       final imageAsTensor = _preprocessImage(imageInput);
-      final output = List.filled(1 * 3, 0).reshape([1, 3]); // Allocate for 3 classes
+      final output = List.filled(1 * 3, 0).reshape([1, 3]);
 
       _interpreter!.run(imageAsTensor, output);
 
       final confidenceScores = output[0];
 
-      // Find the index of the highest confidence score
       int maxScoreIndex = 0;
       double maxScore = confidenceScores[0];
       for (int i = 1; i < confidenceScores.length; i++) {
@@ -128,8 +124,14 @@ class AddClothesFieldsState extends State<AddClothesFields> {
       }
 
       setState(() {
-        _category = _labels![maxScoreIndex];
-        _logger.i("Image classified successfully: $_category");
+        String classifiedCategory = _labels![maxScoreIndex];
+        _classifiedCategoryController.text = classifiedCategory;
+        
+        // Only set user category if it's empty
+        if (_userCategoryController.text.isEmpty) {
+          _userCategoryController.text = classifiedCategory;
+        }
+        _logger.i("Image classified successfully: $classifiedCategory");
       });
     } else {
       _logger.e("Image classification failed: image input is null.");
@@ -138,23 +140,23 @@ class AddClothesFieldsState extends State<AddClothesFields> {
 
   List<List<List<List<double>>>> _preprocessImage(img.Image image) {
     final resizedImage = img.copyResize(image, width: 224, height: 224);
-    return [ // Add a batch dimension
-    List.generate(
-      224, // Height
-      (y) => List.generate(
-        224, // Width
-        (x) {
-          final pixel = resizedImage.getPixel(x, y);
-          return [
-            pixel.r / 255.0,
-            pixel.g / 255.0,
-            pixel.b / 255.0,
-          ];
-        },
+    return [
+      List.generate(
+        224,
+        (y) => List.generate(
+          224,
+          (x) {
+            final pixel = resizedImage.getPixel(x, y);
+            return [
+              pixel.r / 255.0,
+              pixel.g / 255.0,
+              pixel.b / 255.0,
+            ];
+          },
+        ),
       ),
-    ),
-  ];
-}
+    ];
+  }
 
   Future<String> _getUniqueImageName(String originalName) async {
     String fileName = originalName;
@@ -201,10 +203,14 @@ class AddClothesFieldsState extends State<AddClothesFields> {
       _formKey.currentState!.save();
       final imageName = await _uploadImage(_image);
       try {
+        String categoryToUse = _userCategoryController.text.isNotEmpty 
+            ? _userCategoryController.text 
+            : _classifiedCategoryController.text;
+        
         await FirebaseFirestore.instance.collection('clothes').add({
           'title': _title,
           'image': imageName ?? '',
-          'category': _category,
+          'category': categoryToUse,
           'brand': _brand,
           'size': _size,
           'price': _price,
@@ -219,22 +225,10 @@ class AddClothesFieldsState extends State<AddClothesFields> {
     }
   }
 
-  Future<void> _fetchImageData(String imageName) async {
-    if (imageName.isNotEmpty) {
-      try {
-        final ref = _storage.ref().child('byte_format_images/$imageName');
-        final imageData = await ref.getData();
-        setState(() {
-          _imageBytes = imageData;
-        });
-      } catch (e) {
-        _logger.e('Error fetching image data: $e');
-      }
-    }
-  }
-
   @override
   void dispose() {
+    _userCategoryController.dispose();
+    _classifiedCategoryController.dispose();
     _interpreter?.close();
     super.dispose();
   }
@@ -279,15 +273,18 @@ class AddClothesFieldsState extends State<AddClothesFields> {
             ],
           ),
           const SizedBox(height: 12.0),
-          _buildTextField(
-            label: 'Category',
-            initialValue: _category,
-            onChanged: (value) {
-              setState(() {
-                _category = value;
-              });
-            },
+          _buildTextFieldWithController(
+            label: 'Category (User Input)',
+            controller: _userCategoryController,
             validatorMessage: 'Please enter a category',
+            height: fieldHeight,
+          ),
+          const SizedBox(height: 12.0),
+          _buildTextFieldWithController(
+            label: 'Category (Classified)',
+            controller: _classifiedCategoryController,
+            validatorMessage: null,
+            isReadOnly: true,
             height: fieldHeight,
           ),
           const SizedBox(height: 12.0),
@@ -308,12 +305,11 @@ class AddClothesFieldsState extends State<AddClothesFields> {
             initialValue: _size?.toString(),
             onChanged: (value) {
               setState(() {
-                _size = int.tryParse(value);
+                _size = int.tryParse(value!);
               });
             },
-            validatorMessage: 'Please enter a size',
+            validatorMessage: 'Please enter a valid size',
             height: fieldHeight,
-            keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 12.0),
           _buildTextField(
@@ -326,9 +322,8 @@ class AddClothesFieldsState extends State<AddClothesFields> {
             },
             validatorMessage: 'Please enter a price',
             height: fieldHeight,
-            keyboardType: TextInputType.number,
           ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 12.0),
           ElevatedButton(
             onPressed: submitData,
             child: const Text('Submit'),
@@ -338,26 +333,18 @@ class AddClothesFieldsState extends State<AddClothesFields> {
     );
   }
 
-  Widget _buildTextField({
+  Widget _buildTextFieldWithController({
     required String label,
-    String? initialValue,
-    required ValueChanged<String> onChanged,
-    required String validatorMessage,
+    required TextEditingController controller,
+    required String? validatorMessage,
+    bool isReadOnly = false,
     required double height,
-    TextInputType keyboardType = TextInputType.text,
   }) {
     return SizedBox(
       height: height,
       child: TextFormField(
-        initialValue: initialValue,
-        onChanged: onChanged,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return validatorMessage;
-          }
-          return null;
-        },
-        keyboardType: keyboardType,
+        controller: controller,
+        readOnly: isReadOnly,
         decoration: InputDecoration(
           labelText: label,
           focusedBorder: OutlineInputBorder(
@@ -366,8 +353,40 @@ class AddClothesFieldsState extends State<AddClothesFields> {
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: unfocusedBorderColor),
           ),
-          hintText: 'Enter $label',
         ),
+        validator: validatorMessage != null
+            ? (value) => value!.isEmpty ? validatorMessage : null
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    String? initialValue = '',
+    required String? Function(String?)? onChanged,
+    required String? validatorMessage,
+    bool isReadOnly = false,
+    required double height,
+  }) {
+    return SizedBox(
+      height: height,
+      child: TextFormField(
+        initialValue: initialValue,
+        readOnly: isReadOnly,
+        decoration: InputDecoration(
+          labelText: label,
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: focusedBorderColor),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: unfocusedBorderColor),
+          ),
+        ),
+        onChanged: onChanged,
+        validator: validatorMessage != null
+            ? (value) => value!.isEmpty ? validatorMessage : null
+            : null,
       ),
     );
   }
