@@ -41,20 +41,23 @@ class _ProfileFieldsState extends State<ProfileFields> {
             },
             validatorMessage: 'Please enter your email',
             height: fieldHeight,
+            enabled: false, // Email should be disabled as it comes from Firebase Auth
           ),
           const SizedBox(height: 12.0),
 
-          // Password Field
+          const SizedBox(height: 12.0),
+
+          // New Password Field
           _buildTextField(
-            label: 'Password',
-            initialValue: widget.userInfo['password'],
+            label: 'New Password',
+            initialValue: widget.userInfo['newPassword'],
             onChanged: (value) {
               widget.updateHasChanges(true);
               setState(() {
-                widget.userInfo['password'] = value;
+                widget.userInfo['newPassword'] = value;
               });
             },
-            validatorMessage: 'Please enter your password',
+            validatorMessage: 'Please enter your new password',
             height: fieldHeight,
             obscureText: true,
           ),
@@ -92,7 +95,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
 
           // Postal Code Field
           _buildTextField(
-            label: 'Postal Code',
+            label: 'Code Postal',
             initialValue: widget.userInfo['postalCode'],
             onChanged: (value) {
               widget.updateHasChanges(true);
@@ -105,9 +108,9 @@ class _ProfileFieldsState extends State<ProfileFields> {
           ),
           const SizedBox(height: 12.0),
 
-          // City Field
+          // Address Field
           _buildTextField(
-            label: 'City',
+            label: 'Ville',
             initialValue: widget.userInfo['city'],
             onChanged: (value) {
               widget.updateHasChanges(true);
@@ -126,33 +129,35 @@ class _ProfileFieldsState extends State<ProfileFields> {
   Widget _buildTextField({
     required String label,
     required String? initialValue,
-    required ValueChanged<String> onChanged,
+    required Function(String) onChanged,
     required String validatorMessage,
-    required double height,
+    double? height,
     bool obscureText = false,
+    bool enabled = true,
   }) {
     return SizedBox(
       height: height,
       child: TextFormField(
         initialValue: initialValue,
+        onChanged: onChanged,
+        obscureText: obscureText,
+        enabled: enabled,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.black),
+          border: OutlineInputBorder(),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: focusedBorderColor, width: 2.0),
+            borderSide: BorderSide(color: focusedBorderColor),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: unfocusedBorderColor, width: 1.0),
+            borderSide: BorderSide(color: unfocusedBorderColor),
           ),
         ),
-        obscureText: obscureText,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return validatorMessage;
           }
           return null;
         },
-        onChanged: onChanged,
       ),
     );
   }
