@@ -26,7 +26,7 @@ class LogoutButton extends StatelessWidget {
         ),
       ),
       child: const Text(
-        'Logout',
+        'Se déconnecter',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,

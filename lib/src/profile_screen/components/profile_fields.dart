@@ -49,8 +49,8 @@ class _ProfileFieldsState extends State<ProfileFields> {
 
           // New Password Field
           _buildTextField(
-            label: 'New Password',
-            initialValue: widget.userInfo['newPassword'],
+            label: 'Password',
+            initialValue: widget.userInfo['newPassword'] ?? 'votemotdepasse',
             onChanged: (value) {
               widget.updateHasChanges(true);
               setState(() {
@@ -65,7 +65,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
 
           // Birthday Field
           _buildTextField(
-            label: 'Birthday',
+            label: 'Anniversaire',
             initialValue: widget.userInfo['birthday'],
             onChanged: (value) {
               widget.updateHasChanges(true);

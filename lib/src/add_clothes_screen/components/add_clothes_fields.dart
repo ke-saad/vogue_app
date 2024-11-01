@@ -322,9 +322,29 @@ class AddClothesFieldsState extends State<AddClothesFields> {
             height: fieldHeight,
           ),
           const SizedBox(height: 12.0),
-          ElevatedButton(
-            onPressed: submitData,
-            child: const Text('Submit'),
+          SizedBox(
+            width: double.infinity, // Make the button take the full width
+            child: ElevatedButton(
+              onPressed: submitData, // Call the passed callback
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    Colors.red, // Set the button background color to red
+                textStyle: const TextStyle(
+                  color: Colors.white, // Set the text color
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(10), // Set the border radius
+                ),
+              ),
+              child: const Text(
+                'Submit',
+                style: TextStyle(
+                  color: Colors.white, // Ensure the text color is white
+                  fontWeight: FontWeight.bold, // Set the text to bold
+                ),
+              ),
+            ),
           ),
         ],
       ),

@@ -28,7 +28,7 @@ class AddClothes extends StatelessWidget {
         ),
       ),
       child: const Text(
-        'Add Clothes',
+        'Ajouter un vêtement',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
