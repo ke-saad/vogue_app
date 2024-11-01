@@ -1,10 +1,11 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:image/image.dart' as img;
 
 class AddClothesFields extends StatefulWidget {
   final String userId;
@@ -27,13 +28,72 @@ class AddClothesFieldsState extends State<AddClothesFields> {
   Uint8List? _imageBytes;
 
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  Interpreter? _interpreter;
+  List<String>? _labels;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadModel();
+  }
+
+  Future<void> _loadModel() async {
+    try {
+      _interpreter = await Interpreter.fromAsset('model_unquant.tflite');
+      final labelsData =
+          await DefaultAssetBundle.of(context).loadString('assets/labels.txt');
+      _labels = labelsData.split('\n');
+    } catch (e) {
+      print("Error loading model: $e");
+    }
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _image = pickedImage;
-    });
+    if (pickedImage != null) {
+      setState(() {
+        _image = pickedImage;
+      });
+      await _classifyImage(File(_image!.path));
+    }
+  }
+
+  Future<void> _classifyImage(File image) async {
+    final img.Image? imageInput = img.decodeImage(image.readAsBytesSync());
+    if (imageInput != null && _interpreter != null && _labels != null) {
+      final imageAsTensor = _preprocessImage(imageInput);
+      final output =
+          List.filled(1 * _labels!.length, 0).reshape([1, _labels!.length]);
+
+      _interpreter!.run(imageAsTensor, output);
+
+      final confidenceScores = output[0];
+      final maxScoreIndex = confidenceScores.indexWhere(
+          (score) => score == confidenceScores.reduce((a, b) => a > b ? a : b));
+
+      setState(() {
+        _category = _labels![maxScoreIndex];
+      });
+    }
+  }
+
+  List<List<List<double>>> _preprocessImage(img.Image image) {
+    final resizedImage = img.copyResize(image, width: 168, height: 168);
+    return List.generate(
+      224,
+      (y) => List.generate(
+        224,
+        (x) {
+          final pixel = resizedImage.getPixel(x, y);
+          return [
+            pixel.r / 255.0, // Extract red value
+            pixel.g / 255.0, // Extract green value
+            pixel.b / 255.0, // Extract blue value
+          ];
+        },
+      ),
+    );
   }
 
   Future<String> _getUniqueImageName(String originalName) async {
@@ -109,6 +169,12 @@ class AddClothesFieldsState extends State<AddClothesFields> {
         print('Error fetching image data: $e');
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _interpreter?.close();
+    super.dispose();
   }
 
   final Color focusedBorderColor = Colors.red;
