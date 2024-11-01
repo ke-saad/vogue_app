@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import './components/profile_fields.dart';
 import './components/process_button.dart';
 import './components/add_clothes_button.dart';
@@ -19,14 +20,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = true;
   bool hasChanges = false;
 
+  // Firebase Authentication user instance
+  User? firebaseUser;
+
   @override
   void initState() {
     super.initState();
-    fetchUserInfo();
+    fetchUserData();
   }
 
-  Future<void> fetchUserInfo() async {
+  Future<void> fetchUserData() async {
     try {
+      firebaseUser = FirebaseAuth.instance.currentUser;
+      if (firebaseUser == null) {
+        print("No authenticated user.");
+        return;
+      }
       final snapshot = await FirebaseFirestore.instance
           .collection('users_info')
           .doc(widget.userId)
@@ -35,10 +44,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (snapshot.exists) {
         setState(() {
           userInfo = snapshot.data() as Map<String, dynamic>;
+          userInfo['email'] = firebaseUser!.email; // Set email from Firebase Auth
           isLoading = false;
         });
       } else {
-        print('User info not found.');
+        print('User info not found in Firestore.');
         setState(() {
           isLoading = false;
         });
@@ -66,9 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         hasChanges = false;
       });
-      // Refetch user info after update
-      await fetchUserInfo();
-      // Update the changes in UI if needed
+      await fetchUserData();
     } catch (e) {
       print('Error updating user info: $e');
     }
@@ -85,12 +93,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.red,
               ),
             )
-          : Center( // Wrap the content with Center
-              child: SingleChildScrollView( // Add SingleChildScrollView for scrolling
+          : Center(
+              child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min, // Make the column as small as its content
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       ProfileFields(
                         userInfo: userInfo,

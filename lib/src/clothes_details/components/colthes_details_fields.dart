@@ -20,22 +20,22 @@ class ClothesDetailsFields extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Category: $category',
+          'Catégorie: $category',
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 8.0),
         Text(
-          'Brand: $brand',
+          'Marque: $brand',
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 8.0),
         Text(
-          'Size: $size',
+          'Taille: $size',
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 8.0),
         Text(
-          'Price: €$price',
+          'Prix: €$price',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,

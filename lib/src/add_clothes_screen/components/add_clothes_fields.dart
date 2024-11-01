@@ -26,7 +26,8 @@ class AddClothesFieldsState extends State<AddClothesFields> {
   String? _title;
   XFile? _image;
   final TextEditingController _userCategoryController = TextEditingController();
-  final TextEditingController _classifiedCategoryController = TextEditingController();
+  final TextEditingController _classifiedCategoryController =
+      TextEditingController();
   String? _brand;
   int? _size;
   String? _price;
@@ -55,8 +56,8 @@ class AddClothesFieldsState extends State<AddClothesFields> {
       }
 
       if (await _checkAssetFileExists('assets/labels.txt')) {
-        final labelsData =
-            await DefaultAssetBundle.of(context).loadString('assets/labels.txt');
+        final labelsData = await DefaultAssetBundle.of(context)
+            .loadString('assets/labels.txt');
         _labels = labelsData.split('\n');
         _logger.i("Labels loaded successfully.");
       } else {
@@ -103,7 +104,8 @@ class AddClothesFieldsState extends State<AddClothesFields> {
 
   Future<void> _classifyImage(File image) async {
     if (_interpreter == null || _labels == null) {
-      _logger.e("Image classification failed: model is not loaded or labels are null.");
+      _logger.e(
+          "Image classification failed: model is not loaded or labels are null.");
       return;
     }
 
@@ -128,8 +130,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
       setState(() {
         String classifiedCategory = _labels![maxScoreIndex];
         _classifiedCategoryController.text = filterString(classifiedCategory);
-        
-        // Only set user category if it's empty
+
         if (_userCategoryController.text.isEmpty) {
           _userCategoryController.text = classifiedCategory;
         }
@@ -204,25 +205,27 @@ class AddClothesFieldsState extends State<AddClothesFields> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final imageName = await _uploadImage(_image);
-      try {
-        String categoryToUse = _userCategoryController.text.isNotEmpty 
-            ? _userCategoryController.text 
-            : _classifiedCategoryController.text;
-        
-        await FirebaseFirestore.instance.collection('clothes').add({
-          'title': _title,
-          'image': imageName ?? '',
-          'category': categoryToUse,
-          'brand': _brand,
-          'size': _size,
-          'price': _price,
-          'user_id': widget.userId,
-        });
+      if (imageName != null) {
+        try {
+          String categoryToUse = _userCategoryController.text.isNotEmpty
+              ? _userCategoryController.text
+              : _classifiedCategoryController.text;
 
-        _logger.i("Clothes data added successfully.");
-        Navigator.pop(context);
-      } catch (e) {
-        _logger.e('Error adding clothes data: $e');
+          await FirebaseFirestore.instance.collection('clothes').add({
+            'title': _title,
+            'image': 'byte_format_images/$imageName',
+            'category': filterString(categoryToUse),
+            'brand': _brand,
+            'size': _size,
+            'price': _price,
+            'user_id': widget.userId,
+          });
+
+          _logger.i("Clothes data added successfully.");
+          Navigator.pop(context);
+        } catch (e) {
+          _logger.e('Error adding clothes data: $e');
+        }
       }
     }
   }

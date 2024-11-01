@@ -32,7 +32,7 @@ class ClothesDetailsAddToCartButton extends StatelessWidget {
           ),
         ),
         child: const Text(
-          'Add to Cart',
+          'Ajouter au panier',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

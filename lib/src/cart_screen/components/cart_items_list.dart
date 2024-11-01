@@ -102,7 +102,7 @@ class CartItemsList extends StatelessWidget {
                         ),
                         const SizedBox(height: 4.0),
                         Text(
-                          'Price: €${item['price']}',
+                          'Prix: €${item['price']}',
                           style: const TextStyle(
                             color: Color(0xFFFFCDD2),
                             fontSize: 14,

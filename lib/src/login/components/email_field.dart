@@ -25,7 +25,7 @@ class _EmailFieldState extends State<EmailField> {
         controller: widget.controller,
         textAlign: TextAlign.center,
         decoration: InputDecoration(
-          labelText: 'Email',
+          labelText: 'Login',
           labelStyle: const TextStyle(color: Colors.black),
           border: OutlineInputBorder(
             borderSide: BorderSide(color: unfocusedBorderColor),

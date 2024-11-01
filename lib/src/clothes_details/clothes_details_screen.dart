@@ -99,32 +99,35 @@ class _ClothesDetailsScreenState extends State<ClothesDetailsScreen> {
     return Scaffold(
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (clothesDetails?['image'] != null)
-                      ClothesDetailsTopBox(
-                        title: clothesDetails?['title'] ?? '',
-                        onBackToDashboard: widget.onBackToDashboard,
-                        image: clothesDetails!['image'],
+          : Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (clothesDetails?['image'] != null)
+                        ClothesDetailsTopBox(
+                          title: clothesDetails?['title'] ?? '',
+                          onBackToDashboard: widget.onBackToDashboard,
+                          image: clothesDetails!['image'],
+                        ),
+                      const SizedBox(height: 16.0),
+                      ClothesDetailsFields(
+                        category: clothesDetails?['category'] ?? '',
+                        brand: clothesDetails?['brand'] ?? '',
+                        size: clothesDetails?['size'] ?? 0,
+                        price: clothesDetails?['price'] ?? '',
                       ),
-                    const SizedBox(height: 16.0),
-                    ClothesDetailsFields(
-                      category: clothesDetails?['category'] ?? '',
-                      brand: clothesDetails?['brand'] ?? '',
-                      size: clothesDetails?['size'] ?? 0,
-                      price: clothesDetails?['price'] ?? '',
-                    ),
-                    const SizedBox(height: 32.0),
-                    ClothesDetailsAddToCartButton(
-                      clothesDocId: widget.clothesDocId,
-                      userId: widget.userId,
-                      totalPrice: widget.totalPrice,
-                    ),
-                  ],
+                      const SizedBox(height: 32.0),
+                      ClothesDetailsAddToCartButton(
+                        clothesDocId: widget.clothesDocId,
+                        userId: widget.userId,
+                        totalPrice: widget.totalPrice,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

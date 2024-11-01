@@ -4,8 +4,11 @@ class ProfileFields extends StatefulWidget {
   final Map<String, dynamic> userInfo;
   final Function(bool) updateHasChanges;
 
-  const ProfileFields(
-      {super.key, required this.userInfo, required this.updateHasChanges});
+  const ProfileFields({
+    super.key,
+    required this.userInfo,
+    required this.updateHasChanges,
+  });
 
   @override
   State<ProfileFields> createState() => _ProfileFieldsState();
@@ -20,39 +23,44 @@ class _ProfileFieldsState extends State<ProfileFields> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
     final fieldHeight = screenHeight * 0.07;
 
     return Form(
       key: _formKey,
       child: Column(
         children: [
+          // Email Field
           _buildTextField(
-            label: 'First Name',
-            initialValue: widget.userInfo['first_name'],
+            label: 'Login',
+            initialValue: widget.userInfo['email'],
             onChanged: (value) {
               widget.updateHasChanges(true);
               setState(() {
-                widget.userInfo['first_name'] = value;
+                widget.userInfo['email'] = value;
               });
             },
-            validatorMessage: 'Please enter your first name',
+            validatorMessage: 'Please enter your email',
             height: fieldHeight,
           ),
           const SizedBox(height: 12.0),
+
+          // Password Field
           _buildTextField(
-            label: 'Last Name',
-            initialValue: widget.userInfo['last_name'],
+            label: 'Password',
+            initialValue: widget.userInfo['password'],
             onChanged: (value) {
               widget.updateHasChanges(true);
               setState(() {
-                widget.userInfo['last_name'] = value;
+                widget.userInfo['password'] = value;
               });
             },
-            validatorMessage: 'Please enter your last name',
+            validatorMessage: 'Please enter your password',
             height: fieldHeight,
+            obscureText: true,
           ),
           const SizedBox(height: 12.0),
+
+          // Birthday Field
           _buildTextField(
             label: 'Birthday',
             initialValue: widget.userInfo['birthday'],
@@ -66,6 +74,8 @@ class _ProfileFieldsState extends State<ProfileFields> {
             height: fieldHeight,
           ),
           const SizedBox(height: 12.0),
+
+          // Address Field
           _buildTextField(
             label: 'Address',
             initialValue: widget.userInfo['address'],
@@ -79,6 +89,8 @@ class _ProfileFieldsState extends State<ProfileFields> {
             height: fieldHeight,
           ),
           const SizedBox(height: 12.0),
+
+          // Postal Code Field
           _buildTextField(
             label: 'Postal Code',
             initialValue: widget.userInfo['postalCode'],
@@ -92,6 +104,8 @@ class _ProfileFieldsState extends State<ProfileFields> {
             height: fieldHeight,
           ),
           const SizedBox(height: 12.0),
+
+          // City Field
           _buildTextField(
             label: 'City',
             initialValue: widget.userInfo['city'],
@@ -115,8 +129,10 @@ class _ProfileFieldsState extends State<ProfileFields> {
     required ValueChanged<String> onChanged,
     required String validatorMessage,
     required double height,
+    bool obscureText = false,
   }) {
     return SizedBox(
+      height: height,
       child: TextFormField(
         initialValue: initialValue,
         decoration: InputDecoration(
@@ -129,6 +145,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
             borderSide: BorderSide(color: unfocusedBorderColor, width: 1.0),
           ),
         ),
+        obscureText: obscureText,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return validatorMessage;

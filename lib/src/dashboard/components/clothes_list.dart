@@ -139,7 +139,7 @@ class _ClothesListState extends State<ClothesList> {
                                 ),
                                 const SizedBox(height: 4.0),
                                 Text(
-                                  'Size: ${clothes['size']}',
+                                  'Taille: ${clothes['size']}',
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(0.9),
                                     fontSize: 14,
@@ -147,7 +147,7 @@ class _ClothesListState extends State<ClothesList> {
                                 ),
                                 const SizedBox(height: 4.0),
                                 Text(
-                                  'Price: €${clothes['price']}',
+                                  'Prix: €${clothes['price']}',
                                   style: const TextStyle(
                                     color: Color.fromARGB(255, 0, 0, 0),
                                     fontSize: 14,
