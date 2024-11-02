@@ -29,7 +29,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
       key: _formKey,
       child: Column(
         children: [
-          // Email Field
+          
           _buildTextField(
             label: 'Login',
             initialValue: widget.userInfo['email'],
@@ -41,13 +41,13 @@ class _ProfileFieldsState extends State<ProfileFields> {
             },
             validatorMessage: 'Please enter your email',
             height: fieldHeight,
-            enabled: false, // Email should be disabled as it comes from Firebase Auth
+            enabled: false, 
           ),
           const SizedBox(height: 12.0),
 
           const SizedBox(height: 12.0),
 
-          // New Password Field
+          
           _buildTextField(
             label: 'Password',
             initialValue: widget.userInfo['newPassword'] ?? 'votemotdepasse',
@@ -63,7 +63,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
           ),
           const SizedBox(height: 12.0),
 
-          // Birthday Field
+          
           _buildTextField(
             label: 'Anniversaire',
             initialValue: widget.userInfo['birthday'],
@@ -78,7 +78,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
           ),
           const SizedBox(height: 12.0),
 
-          // Address Field
+          
           _buildTextField(
             label: 'Adresse',
             initialValue: widget.userInfo['address'],
@@ -93,7 +93,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
           ),
           const SizedBox(height: 12.0),
 
-          // Postal Code Field
+          
           _buildTextField(
             label: 'Code Postal',
             initialValue: widget.userInfo['postalCode'],
@@ -108,7 +108,7 @@ class _ProfileFieldsState extends State<ProfileFields> {
           ),
           const SizedBox(height: 12.0),
 
-          // Address Field
+          
           _buildTextField(
             label: 'Ville',
             initialValue: widget.userInfo['city'],

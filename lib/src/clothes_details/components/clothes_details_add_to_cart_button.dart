@@ -20,7 +20,7 @@ class ClothesDetailsAddToCartButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           final cartUtil = CartUtil();
-          cartUtil.addToCart(context, clothesDocId, userId); // Pass context here
+          cartUtil.addToCart(context, clothesDocId, userId);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,

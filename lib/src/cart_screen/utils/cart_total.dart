@@ -25,14 +25,14 @@ class CartTotal extends StatelessWidget {
           Text(
             '€${totalPrice.toStringAsFixed(2)}',
             style: const TextStyle(
-                fontWeight: FontWeight.bold, color: Color.fromARGB(255, 11, 120, 15)),
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 11, 120, 15)),
           ),
         ],
       ),
     );
   }
 
-  // In cart_total.dart
   static double calculateTotal(List<Map<String, dynamic>?> cartItems) {
     double total = 0;
     for (final item in cartItems) {

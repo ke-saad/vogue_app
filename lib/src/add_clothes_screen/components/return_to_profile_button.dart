@@ -5,7 +5,7 @@ class ReturnToProfileButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        Navigator.pop(context); // Navigate back to the ProfileScreen
+        Navigator.pop(context);
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,

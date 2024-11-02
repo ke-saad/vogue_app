@@ -37,12 +37,11 @@ Future<Map<String, dynamic>?> loginUser(String email, String password) async {
         await FirebaseFirestore.instance.collection('carts').doc(uid).get();
 
     if (!cartSnapshot.exists) {
-      // Add 'cart_articles' as an empty array when creating a new cart
       await FirebaseFirestore.instance.collection('carts').doc(uid).set({
         'cart_title': 'My Cart',
         'total_price': 0.0,
         'user_uid': uid,
-        'cart_articles': [], // Initialize 'cart_articles' as an empty array
+        'cart_articles': [],
       });
       logger.i('Cart created for UID: $uid');
     }

@@ -4,7 +4,7 @@ import '../cart_screen/cart_screen.dart';
 import './components/clothes_list.dart';
 import '../clothes_details/clothes_details_screen.dart';
 import '../profile_screen/profile_screen.dart';
-import 'components/bottom_navbar.dart'; // Import the ProfileScreen
+import 'components/bottom_navbar.dart';
 
 class UserDashboard extends StatefulWidget {
   final String userId;
@@ -59,36 +59,35 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget _buildSelectedContent() {
-  if (selectedClothesId != null) {
-    return Scaffold(
-      body: ClothesDetailsScreen(
-        clothesDocId: selectedClothesId!,
-        onBackToDashboard: () {
-          setState(() {
-            selectedClothesId = null;
-          });
-        },
-        userId: widget.userId,
-        totalPrice: 0.0,
-      ),
-    );
-  } else {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: _buildListContent(),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
-    );
+    if (selectedClothesId != null) {
+      return Scaffold(
+        body: ClothesDetailsScreen(
+          clothesDocId: selectedClothesId!,
+          onBackToDashboard: () {
+            setState(() {
+              selectedClothesId = null;
+            });
+          },
+          userId: widget.userId,
+          totalPrice: 0.0,
+        ),
+      );
+    } else {
+      return Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              child: _buildListContent(),
+            ),
+          ],
+        ),
+        bottomNavigationBar: BottomNavBar(
+          selectedIndex: _selectedIndex,
+          onItemTapped: _onItemTapped,
+        ),
+      );
+    }
   }
-}
-
 
   Widget _buildListContent() {
     switch (_selectedIndex) {

@@ -28,104 +28,100 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> fetchCartData() async {
-  try {
-    final cartDoc = await FirebaseFirestore.instance
-        .collection('carts')
-        .doc(widget.userId)
-        .get();
+    try {
+      final cartDoc = await FirebaseFirestore.instance
+          .collection('carts')
+          .doc(widget.userId)
+          .get();
 
-    if (cartDoc.exists) {
-      final data = cartDoc.data() as Map<String, dynamic>;
-      final cartArticles = data['cart_articles'] as List<dynamic>? ?? [];
+      if (cartDoc.exists) {
+        final data = cartDoc.data() as Map<String, dynamic>;
+        final cartArticles = data['cart_articles'] as List<dynamic>? ?? [];
 
-      totalPrice = data['total_price']?.toDouble() ?? 0.0;
+        totalPrice = data['total_price']?.toDouble() ?? 0.0;
 
-      for (var articleId in cartArticles) {
-        final clothesDoc = await FirebaseFirestore.instance
-            .collection('clothes')
-            .doc(articleId)
-            .get();
-        if (clothesDoc.exists) {
-          final clothesData = clothesDoc.data() as Map<String, dynamic>;
-          clothesData['clothesDocId'] = articleId;
+        for (var articleId in cartArticles) {
+          final clothesDoc = await FirebaseFirestore.instance
+              .collection('clothes')
+              .doc(articleId)
+              .get();
+          if (clothesDoc.exists) {
+            final clothesData = clothesDoc.data() as Map<String, dynamic>;
+            clothesData['clothesDocId'] = articleId;
 
-          final imagePath = clothesData['image'] as String?;
-          if (imagePath != null && imagePath.isNotEmpty) {
-            try {
-              final imageRef = _storage.ref().child(imagePath);
-              final imageData = await imageRef.getData();
-              clothesData['image'] = imageData;
-            } catch (e) {
-              print('Error fetching image for ${clothesData['title']}: $e');
+            final imagePath = clothesData['image'] as String?;
+            if (imagePath != null && imagePath.isNotEmpty) {
+              try {
+                final imageRef = _storage.ref().child(imagePath);
+                final imageData = await imageRef.getData();
+                clothesData['image'] = imageData;
+              } catch (e) {
+                print('Error fetching image for ${clothesData['title']}: $e');
+                clothesData['image'] = null;
+              }
+            } else {
               clothesData['image'] = null;
             }
-          } else {
-            clothesData['image'] = null;
+            cartItems.add(clothesData);
           }
-          cartItems.add(clothesData);
         }
       }
-    }
 
-    // Check if the widget is still mounted before calling setState
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  } catch (e) {
-    print('Error fetching cart data: $e');
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching cart data: $e');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
-}
-
 
   Future<void> removeItemFromCart(String articleId) async {
-  try {
-    final cartDocRef = FirebaseFirestore.instance.collection('carts').doc(widget.userId);
-    final DocumentSnapshot cartDoc = await cartDocRef.get();
+    try {
+      final cartDocRef =
+          FirebaseFirestore.instance.collection('carts').doc(widget.userId);
+      final DocumentSnapshot cartDoc = await cartDocRef.get();
 
-    if (cartDoc.exists) {
-      List<String> cartArticles = List<String>.from(cartDoc.get('cart_articles') ?? []);
+      if (cartDoc.exists) {
+        List<String> cartArticles =
+            List<String>.from(cartDoc.get('cart_articles') ?? []);
 
-      if (cartArticles.contains(articleId)) {
-        await cartDocRef.update({
-          'cart_articles': FieldValue.arrayRemove([articleId])
-        });
+        if (cartArticles.contains(articleId)) {
+          await cartDocRef.update({
+            'cart_articles': FieldValue.arrayRemove([articleId])
+          });
 
-        // Remove from local list and update the total
-        setState(() {
-          cartItems.removeWhere((item) => item['clothesDocId'] == articleId);
-        });
+          setState(() {
+            cartItems.removeWhere((item) => item['clothesDocId'] == articleId);
+          });
 
-        // Update `cartArticles` to reflect the item removed
-        cartArticles.remove(articleId);
+          cartArticles.remove(articleId);
 
-        // Call `updateTotal` with the updated cart articles
-        await _updateCartTotal.updateTotal(widget.userId, cartArticles);
+          await _updateCartTotal.updateTotal(widget.userId, cartArticles);
 
-        // Refresh the total price on screen after update
-        final updatedTotal = await _updateCartTotal.calculateTotal(cartArticles);
-        setState(() {
-          totalPrice = updatedTotal;
-        });
+          final updatedTotal =
+              await _updateCartTotal.calculateTotal(cartArticles);
+          setState(() {
+            totalPrice = updatedTotal;
+          });
 
-        print('Cart total updated after item removal.');
+          print('Cart total updated after item removal.');
+        } else {
+          print('Item $articleId not found in cart_articles!');
+        }
       } else {
-        print('Item $articleId not found in cart_articles!');
+        print('Cart not found!');
       }
-    } else {
-      print('Cart not found!');
+    } catch (e) {
+      print('Error removing item: $e');
     }
-  } catch (e) {
-    print('Error removing item: $e');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ProcessButton extends StatelessWidget {
   final bool hasChanges;
-  final VoidCallback updateUserInfo; // Use VoidCallback instead of Function
+  final VoidCallback updateUserInfo;
 
   const ProcessButton({Key? key, required this.hasChanges, required this.updateUserInfo}) : super(key: key);
 

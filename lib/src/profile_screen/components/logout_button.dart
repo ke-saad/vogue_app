@@ -1,7 +1,7 @@
-// import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:vogue_app/main.dart';
-// import '../../login/login_screen.dart';
+
 
 class LogoutButton extends StatelessWidget {
   final String userId;
@@ -12,9 +12,9 @@ class LogoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        // Access the VogueAppState to call the logout function
+        
         final vogueAppState = context.findAncestorStateOfType<VogueAppState>();
-        vogueAppState?.logout(); // Logs the user out without navigation
+        vogueAppState?.logout();
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,

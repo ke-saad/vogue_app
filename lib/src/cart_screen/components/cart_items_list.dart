@@ -21,7 +21,7 @@ class CartItemsList extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = cartItems[index];
         return Dismissible(
-          key: Key(item['clothesDocId']),  // Assuming clothesDocId exists in 'item'
+          key: Key(item['clothesDocId']),
           onDismissed: (direction) {
             removeFromCart(item['clothesDocId'], userId); 
             onCartItemRemoved(); 

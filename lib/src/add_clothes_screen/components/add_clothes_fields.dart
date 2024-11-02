@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
-import 'package:flutter/services.dart'; // Uncommented to use TextInputFormatter
+import 'package:flutter/services.dart';
 
 import '../utils/string_filter.dart';
 
@@ -343,25 +343,25 @@ class AddClothesFieldsState extends State<AddClothesFields> {
           ),
           const SizedBox(height: 24.0),
           SizedBox(
-            width: double.infinity, // Make the button take the full width
+            width: double.infinity,
             child: ElevatedButton(
               onPressed: submitData,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    Colors.red, // Set the button background color to red
+                    Colors.red,
                 textStyle: const TextStyle(
-                  color: Colors.white, // Set the text color
+                  color: Colors.white,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(10), // Set the border radius
+                      BorderRadius.circular(10),
                 ),
               ),
               child: const Text(
                 'Valider',
                 style: TextStyle(
-                  color: Colors.white, // Ensure the text color is white
-                  fontWeight: FontWeight.bold, // Set the text to bold
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
