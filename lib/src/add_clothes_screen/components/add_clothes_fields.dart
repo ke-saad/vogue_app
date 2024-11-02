@@ -219,13 +219,27 @@ class AddClothesFieldsState extends State<AddClothesFields> {
             'brand': _brand,
             'size': _size,
             'price': _price,
-            'user_id': widget.userId,
           });
 
           _logger.i("Clothes data added successfully.");
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Article ajouté avec succès'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
           Navigator.pop(context);
         } catch (e) {
           _logger.e('Error adding clothes data: $e');
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Erreur lors de l\'ajout de l\'article'),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
     }

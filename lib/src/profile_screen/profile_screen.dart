@@ -82,10 +82,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .then((_) async {
         print('User re-authenticated successfully.');
         await firebaseUser!.updatePassword(newPassword);
-        print('Password updated successfully');
+        print('Mot de passe mis à jour');
       });
     } on FirebaseAuthException catch (e) {
-      String errorMessage = 'An error occurred while updating the password.';
+      String errorMessage = 'Mot de passe incorrect';
       if (e.code == 'wrong-password') {
         errorMessage = 'The current password is incorrect.';
       } else if (e.code == 'weak-password') {
@@ -168,13 +168,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: const Text('Cancel'),
+              child: const Text('Annuler'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context, currentPasswordController.text);
               },
-              child: const Text('Confirm'),
+              child: const Text('Confirmer'),
             ),
           ],
         );
