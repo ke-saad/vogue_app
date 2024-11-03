@@ -113,7 +113,7 @@ class AddClothesFieldsState extends State<AddClothesFields> {
     final img.Image? imageInput = img.decodeImage(image.readAsBytesSync());
     if (imageInput != null) {
       final imageAsTensor = _preprocessImage(imageInput);
-      final output = List.filled(1 * 3, 0).reshape([1, 3]);
+      final output = List.filled(1 * 6, 0).reshape([1, 6]);
 
       _interpreter!.run(imageAsTensor, output);
 

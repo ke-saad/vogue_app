@@ -1,3 +1,6 @@
-0 Hauts
-1 Pantalons
+0 Pantalons
+1 Hauts
 2 Chaussures
+3 Shorts
+4 T-shirts
+5 Jackets & Hoodies
