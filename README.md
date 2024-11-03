@@ -1,16 +1,15 @@
-# vogue_app
+### Coordonnées de test
+Voici les identifiants de deux utilisateurs pour tester l'application :
 
-A new Flutter project.
+- **Utilisateur 1 :**
+   - Login : `user1@gmail.com`
+   - Mot de passe : `123456`
 
-## Getting Started
+- **Utilisateur 2 :**
+   - Login : `user2@gmail.com`
+   - Mot de passe : `azerty`
 
-This project is a starting point for a Flutter application.
+### Observations
+1. Lorsque vous modifiez le mot de passe sur l'écran des informations de profil, en cliquant sur le bouton "Valider", il vous sera demandé de saisir le mot de passe actuel. Cela est nécessaire pour une réauthentification via Firebase Auth. Toutefois, si vous ne modifiez pas le mot de passe, vous pouvez mettre à jour les autres informations sans avoir à entrer le mot de passe actuel.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+2. La précision du modèle utilisé pour la classification des articles est limitée, ce qui signifie qu'il peut parfois commettre des erreurs lors du processus de classification.
